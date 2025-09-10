@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TaskRequestValidator<T extends TaskRequest> {
+public class TaskRequestValidator {
 
-    public void validate(final T request) {
+    public void validate(final TaskRequest request) {
 
         if (request.title() == null || request.title().trim().isEmpty()) {
             throw new TaskInvalidFieldException(

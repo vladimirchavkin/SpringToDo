@@ -31,7 +31,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
 
-    private final TaskRequestValidator<TaskRequest> taskRequestValidator;
+    private final TaskRequestValidator taskRequestValidator;
 
     private final MeterRegistry meterRegistry;
 

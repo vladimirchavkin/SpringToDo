@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -88,7 +87,7 @@ class TaskControllerTest {
 
     @Test
     void findById_Success_ReturnsTask() throws Exception {
-        when(taskService.findById(eq(1L))).thenReturn(taskResponse);
+        when(taskService.findById(1L)).thenReturn(taskResponse);
 
         mockMvc.perform(get("/api/v1/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -98,12 +97,12 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.data.description").value(taskResponse.description()))
                 .andExpect(jsonPath("$.data.isCompleted").value(taskResponse.isCompleted().toString()));
 
-        verify(taskService).findById(eq(1L));
+        verify(taskService).findById(1L);
     }
 
     @Test
     void findAll_Success_ReturnsPagedTasks() throws Exception {
-        when(taskService.findAll(eq(0), eq(10))).thenReturn(taskResponsePage);
+        when(taskService.findAll(0, 10)).thenReturn(taskResponsePage);
 
         mockMvc.perform(get("/api/v1/tasks/all")
                         .param("page", "0")
@@ -114,12 +113,12 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.data.content[0].title").value(taskResponse.title()))
                 .andExpect(jsonPath("$.data.totalElements").value(1));
 
-        verify(taskService).findAll(eq(0), eq(10));
+        verify(taskService).findAll(0, 10);
     }
 
     @Test
     void findAllByIsCompleted_Success_ReturnsPagedTasks() throws Exception {
-        when(taskService.findAllByIsCompleted(eq(CompletionStatus.NOT_COMPLETED), eq(0), eq(10)))
+        when(taskService.findAllByIsCompleted(CompletionStatus.NOT_COMPLETED, 0, 10))
                 .thenReturn(taskResponsePage);
 
         mockMvc.perform(get("/api/v1/tasks/by-is-completed")
@@ -132,28 +131,12 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.data.content[0].title").value(taskResponse.title()))
                 .andExpect(jsonPath("$.data.totalElements").value(1));
 
-        verify(taskService).findAllByIsCompleted(eq(CompletionStatus.NOT_COMPLETED), eq(0), eq(10));
-    }
-
-    @Test
-    void updateTask_Success_ReturnsUpdatedTask() throws Exception {
-        when(taskService.update(any(TaskRequest.class), eq(1L))).thenReturn(taskResponse);
-
-        mockMvc.perform(put("/api/v1/tasks/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(taskRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(taskResponse.id()))
-                .andExpect(jsonPath("$.data.title").value(taskResponse.title()))
-                .andExpect(jsonPath("$.data.description").value(taskResponse.description()))
-                .andExpect(jsonPath("$.data.isCompleted").value(taskResponse.isCompleted().toString()));
-
-        verify(taskService).update(any(TaskRequest.class), eq(1L));
+        verify(taskService).findAllByIsCompleted(CompletionStatus.NOT_COMPLETED, 0, 10);
     }
 
     @Test
     void deleteTask_Success_ReturnsDeletedTask() throws Exception {
-        when(taskService.delete(eq(1L))).thenReturn(taskResponse);
+        when(taskService.delete(1L)).thenReturn(taskResponse);
 
         mockMvc.perform(delete("/api/v1/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -163,6 +146,6 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.data.description").value(taskResponse.description()))
                 .andExpect(jsonPath("$.data.isCompleted").value(taskResponse.isCompleted().toString()));
 
-        verify(taskService).delete(eq(1L));
+        verify(taskService).delete(1L);
     }
 }

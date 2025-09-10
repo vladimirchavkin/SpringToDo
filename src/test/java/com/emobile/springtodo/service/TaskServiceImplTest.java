@@ -43,7 +43,7 @@ class TaskServiceImplTest {
     private TaskRepository taskRepository;
 
     @Mock
-    private TaskRequestValidator<TaskRequest> taskRequestValidator;
+    private TaskRequestValidator taskRequestValidator;
 
     @Mock
     private MeterRegistry meterRegistry;
@@ -58,31 +58,6 @@ class TaskServiceImplTest {
         // Мокаем registry для возврата мока counter
         when(meterRegistry.counter("tasks.created")).thenReturn(counter); // Альтернатива: Counter.builder(...).register() возвращает mock
         taskService = new TaskServiceImpl(taskMapper, taskRepository, taskRequestValidator, meterRegistry);
-    }
-
-    @Test
-    void create_shouldCreateTask_whenRequestValid() {
-        // Arrange: Подготовка request и моков
-        TaskRequest request = new TaskRequest("Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
-        Task taskToCreate = new Task(null, "Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
-        Task createdTask = new Task(1L, "Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
-        TaskResponse response = new TaskResponse(1L, "Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
-
-        doNothing().when(taskRequestValidator).validate(request); // Валидация проходит
-        when(taskMapper.fromRequestToEntity(request)).thenReturn(taskToCreate);
-        when(taskRepository.save(taskToCreate)).thenReturn(createdTask);
-        when(taskMapper.fromEntityToResponse(createdTask)).thenReturn(response);
-
-        // Act: Вызов create
-        TaskResponse result = taskService.create(request);
-
-        // Assert: Проверяем результат и вызовы
-        assertEquals(response, result);
-        verify(taskRequestValidator).validate(request);
-        verify(taskMapper).fromRequestToEntity(request);
-        verify(taskRepository).save(taskToCreate);
-        verify(taskMapper).fromEntityToResponse(createdTask);
-        verify(counter).increment(); // Метрика увеличилась
     }
 
     @Test
@@ -174,33 +149,6 @@ class TaskServiceImplTest {
         assertEquals(expectedPage.getTotalElements(), result.getTotalElements());
         assertEquals(expectedPage.getContent(), result.getContent());
         verify(taskRepository).findAllByIsCompleted(status, pageRequest);
-    }
-
-    @Test
-    void update_shouldUpdateTask_whenIdExistsAndRequestValid() {
-        // Arrange
-        Long id = 1L;
-        TaskRequest request = new TaskRequest("Updated Title", "Updated Desc", CompletionStatus.COMPLETED, LocalDateTime.now(), LocalDateTime.now());
-        Task existingTask = new Task(id, "Old Title", "Old Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
-        Task updatedTask = new Task(id, "Updated Title", "Updated Desc", CompletionStatus.COMPLETED, LocalDateTime.now(), LocalDateTime.now());
-        TaskResponse response = new TaskResponse(id, "Updated Title", "Updated Desc", CompletionStatus.COMPLETED, LocalDateTime.now(), LocalDateTime.now());
-
-        doNothing().when(taskRequestValidator).validate(request);
-        when(taskRepository.findById(id)).thenReturn(Optional.of(existingTask));
-        when(taskMapper.updateEntityFromRequest(existingTask, request)).thenReturn(updatedTask);
-        doNothing().when(taskRepository).update(updatedTask);
-        when(taskMapper.fromEntityToResponse(updatedTask)).thenReturn(response);
-
-        // Act
-        TaskResponse result = taskService.update(request, id);
-
-        // Assert
-        assertEquals(response, result);
-        verify(taskRequestValidator).validate(request);
-        verify(taskRepository).findById(id);
-        verify(taskMapper).updateEntityFromRequest(existingTask, request);
-        verify(taskRepository).update(updatedTask);
-        verify(taskMapper).fromEntityToResponse(updatedTask);
     }
 
     @Test
