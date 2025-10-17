@@ -8,7 +8,7 @@ import com.emobile.springtodo.entity.enumeration.ExceptionMessage;
 import com.emobile.springtodo.exception.TaskInvalidFieldException;
 import com.emobile.springtodo.exception.TaskNotFoundException;
 import com.emobile.springtodo.mapper.TaskMapper;
-import com.emobile.springtodo.repository.HibernateTaskRepository;
+import com.emobile.springtodo.repository.JpaTaskRepository;
 import com.emobile.springtodo.service.impl.TaskServiceImpl;
 import com.emobile.springtodo.validator.TaskRequestValidator;
 import io.micrometer.core.instrument.Counter;
@@ -29,7 +29,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -43,8 +44,11 @@ class TaskServiceImplTest {
 //    @Mock
 //    private TaskRepository taskRepository;
 
+//    @Mock
+//    private HibernateTaskRepository taskRepository;
+
     @Mock
-    private HibernateTaskRepository taskRepository;
+    private JpaTaskRepository taskRepository;
 
     @Mock
     private TaskRequestValidator taskRequestValidator;

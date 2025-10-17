@@ -8,6 +8,7 @@ import com.emobile.springtodo.entity.enumeration.ExceptionMessage;
 import com.emobile.springtodo.exception.TaskNotFoundException;
 import com.emobile.springtodo.mapper.TaskMapper;
 import com.emobile.springtodo.repository.HibernateTaskRepository;
+import com.emobile.springtodo.repository.JpaTaskRepository;
 import com.emobile.springtodo.service.TaskService;
 import com.emobile.springtodo.validator.TaskRequestValidator;
 import io.micrometer.core.instrument.Counter;
@@ -30,7 +31,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
 //    private final TaskRepository taskRepository;
-    private final HibernateTaskRepository taskRepository;
+//    private final HibernateTaskRepository taskRepository;
+    private final JpaTaskRepository taskRepository;
 
     private final TaskRequestValidator taskRequestValidator;
 
@@ -115,7 +117,7 @@ public class TaskServiceImpl implements TaskService {
         final Task updatedTask = taskMapper.updateEntityFromRequest(taskToUpdate, taskRequest);
         log.info("Task to update has been successfully mapped. Task entity: {}", updatedTask);
 
-        taskRepository.update(updatedTask);
+        taskRepository.save(updatedTask);
         log.info("Task has been successfully saved. Task entity: {}", updatedTask);
 
         return taskMapper.fromEntityToResponse(updatedTask);
