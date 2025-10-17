@@ -7,7 +7,7 @@ import com.emobile.springtodo.entity.enumeration.CompletionStatus;
 import com.emobile.springtodo.entity.enumeration.ExceptionMessage;
 import com.emobile.springtodo.exception.TaskNotFoundException;
 import com.emobile.springtodo.mapper.TaskMapper;
-import com.emobile.springtodo.repository.TaskRepository;
+import com.emobile.springtodo.repository.HibernateTaskRepository;
 import com.emobile.springtodo.service.TaskService;
 import com.emobile.springtodo.validator.TaskRequestValidator;
 import io.micrometer.core.instrument.Counter;
@@ -29,7 +29,8 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
 
-    private final TaskRepository taskRepository;
+//    private final TaskRepository taskRepository;
+    private final HibernateTaskRepository taskRepository;
 
     private final TaskRequestValidator taskRequestValidator;
 

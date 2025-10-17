@@ -35,16 +35,16 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class TaskRepositoryImplTest {
+class JdbcTaskRepositoryTest {
 
     @Mock
     private JdbcTemplate jdbcTemplate;
 
-    private TaskRepositoryImpl taskRepository;
+    private JdbcTaskRepository taskRepository;
 
     @BeforeEach
     void setUp() {
-        taskRepository = new TaskRepositoryImpl(jdbcTemplate);
+        taskRepository = new JdbcTaskRepository(jdbcTemplate);
     }
 
     @Test

@@ -22,6 +22,10 @@ spring:
       connection-timeout: 30_000
     url: jdbc:postgresql://localhost:5432/springtodo
 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
   flyway:
     enabled: true
     user: postgres

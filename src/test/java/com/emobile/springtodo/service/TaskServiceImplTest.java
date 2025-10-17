@@ -8,7 +8,7 @@ import com.emobile.springtodo.entity.enumeration.ExceptionMessage;
 import com.emobile.springtodo.exception.TaskInvalidFieldException;
 import com.emobile.springtodo.exception.TaskNotFoundException;
 import com.emobile.springtodo.mapper.TaskMapper;
-import com.emobile.springtodo.repository.TaskRepository;
+import com.emobile.springtodo.repository.HibernateTaskRepository;
 import com.emobile.springtodo.service.impl.TaskServiceImpl;
 import com.emobile.springtodo.validator.TaskRequestValidator;
 import io.micrometer.core.instrument.Counter;
@@ -40,8 +40,11 @@ class TaskServiceImplTest {
     @Mock
     private TaskMapper taskMapper;
 
+//    @Mock
+//    private TaskRepository taskRepository;
+
     @Mock
-    private TaskRepository taskRepository;
+    private HibernateTaskRepository taskRepository;
 
     @Mock
     private TaskRequestValidator taskRequestValidator;
