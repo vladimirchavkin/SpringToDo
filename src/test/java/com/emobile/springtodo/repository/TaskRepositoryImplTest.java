@@ -9,6 +9,7 @@ import com.emobile.springtodo.exception.PageableIllegalArgumentException;
 import com.emobile.springtodo.exception.TaskInvalidFieldException;
 import com.emobile.springtodo.exception.TaskNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -47,6 +48,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Создание таски: успешно возвращает созданную таску.")
     void save_shouldCreateNewTask_whenIdIsNull() {
         // Arrange: Подготовка задачи без ID
         Task task = new Task();
@@ -76,6 +78,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Создание таски: выбрасывает EntityIsNullException, когда передаём null вместо таски.")
     void save_shouldThrowException_whenTaskIsNull() {
         // Arrange & Act & Assert: Проверяем валидацию
         EntityIsNullException exception = assertThrows(EntityIsNullException.class, () -> taskRepository.save(null));
@@ -83,6 +86,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Создание таски: выбрасывает TaskInvalidFieldException, когда передаём пустую таску.")
     void save_shouldThrowException_whenTitleIsEmpty() {
         // Arrange: Задача с пустым title
         Task task = new Task();
@@ -95,6 +99,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Ищем таску по id: возвращает пустой Optional.")
     void findById_shouldReturnEmpty_whenIdNotFound() {
         // Arrange: Мокаем пустой результат (throw EmptyResultDataAccessException, но мы catch в коде)
         when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyLong()))
@@ -108,6 +113,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Ищем таску по id: выбрасывает TaskInvalidFieldException, при условии что id = null.")
     void findById_shouldThrowException_whenIdIsNull() {
         // Act & Assert
         TaskInvalidFieldException exception = assertThrows(TaskInvalidFieldException.class, () -> taskRepository.findById(null));
@@ -115,6 +121,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Найти все таски: возвращает paged результат.")
     void findAll_shouldReturnPagedTasks() {
         // Arrange: Pageable
         Pageable pageable = PageRequest.of(0, 10);
@@ -132,6 +139,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Найти все таски: выбрасывает PageableIllegalArgumentException, когда pageable = null.")
     void findAll_shouldThrowException_whenPageableIsNull() {
         // Act & Assert
         PageableIllegalArgumentException exception = assertThrows(PageableIllegalArgumentException.class, () -> taskRepository.findAll(null));
@@ -139,6 +147,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Обновить таску: выбрасывает TaskNotFoundException, когда не можем найти таску.")
     void update_shouldThrowNotFound_whenNoRowsUpdated() {
         // Arrange
         Task task = new Task(1L, "Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
@@ -150,6 +159,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Удалить таску: выбрасывает TaskNotFoundException, когда не можем найти таску.")
     void delete_shouldThrowNotFound_whenNoRowsDeleted() {
         // Arrange
         Task task = new Task(1L, "Title", "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
@@ -161,6 +171,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("Удалить таску: выбрасывает EntityIsNullException, когда передаём null.")
     void delete_shouldThrowException_whenTaskIsNull() {
         // Act & Assert
         TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, () -> taskRepository.delete(null));

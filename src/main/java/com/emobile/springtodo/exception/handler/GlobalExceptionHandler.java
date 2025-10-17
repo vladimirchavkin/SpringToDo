@@ -1,6 +1,6 @@
 package com.emobile.springtodo.exception.handler;
 
-import com.emobile.springtodo.controller.response.ApiResponse;
+import com.emobile.springtodo.controller.response.CustomResponse;
 import com.emobile.springtodo.exception.PageableIllegalArgumentException;
 import com.emobile.springtodo.exception.TaskInvalidFieldException;
 import com.emobile.springtodo.exception.TaskNotFoundException;
@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ApiResponse<String> handleTaskInvalidFieldException(final TaskInvalidFieldException e) {
+    public CustomResponse<String> handleTaskInvalidFieldException(final TaskInvalidFieldException e) {
         log.error(e.getMessage());
-        return ApiResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.BAD_REQUEST);
+        return CustomResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ApiResponse<String> handleTaskNotFoundException(final TaskNotFoundException e) {
+    public CustomResponse<String> handleTaskNotFoundException(final TaskNotFoundException e) {
         log.error(e.getMessage());
-        return ApiResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.NOT_FOUND);
+        return CustomResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ApiResponse<String> handlePageableIllegalArgumentException(final PageableIllegalArgumentException e) {
+    public CustomResponse<String> handlePageableIllegalArgumentException(final PageableIllegalArgumentException e) {
         log.error(e.getMessage());
-        return ApiResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.BAD_REQUEST);
+        return CustomResponse.error(e.getMessage(), e.getErrorCode(), HttpStatus.BAD_REQUEST);
     }
 
 }

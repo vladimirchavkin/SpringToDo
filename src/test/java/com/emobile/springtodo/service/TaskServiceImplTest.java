@@ -14,6 +14,7 @@ import com.emobile.springtodo.validator.TaskRequestValidator;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -49,30 +50,31 @@ class TaskServiceImplTest {
     private MeterRegistry meterRegistry;
 
     @Mock
-    private Counter counter; // Мокаем counter из registry
+    private Counter counter;
 
     private TaskServiceImpl taskService;
 
     @BeforeEach
     void setUp() {
-        // Мокаем registry для возврата мока counter
-        when(meterRegistry.counter("tasks.created")).thenReturn(counter); // Альтернатива: Counter.builder(...).register() возвращает mock
+        when(meterRegistry.counter("tasks.created")).thenReturn(counter);
         taskService = new TaskServiceImpl(taskMapper, taskRepository, taskRequestValidator, meterRegistry);
     }
 
     @Test
+    @DisplayName("Создание задачи: выбрасывает исключение при невалидном запросе")
     void create_shouldThrowException_whenRequestInvalid() {
-        // Arrange: Invalid request
+        // Arrange
         TaskRequest request = new TaskRequest(null, "Desc", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null);
         doThrow(new TaskInvalidFieldException("Invalid title", "400")).when(taskRequestValidator).validate(request);
 
-        // Act & Assert: Исключение от валидатора
+        // Act & Assert
         TaskInvalidFieldException exception = assertThrows(TaskInvalidFieldException.class, () -> taskService.create(request));
         assertEquals("Invalid title", exception.getMessage());
-        verifyNoInteractions(taskRepository, taskMapper); // Нет дальнейших вызовов
+        verifyNoInteractions(taskRepository, taskMapper);
     }
 
     @Test
+    @DisplayName("Поиск задачи по ID: возвращает задачу, если ID существует")
     void findById_shouldReturnTask_whenIdExists() {
         // Arrange
         Long id = 1L;
@@ -92,6 +94,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Поиск задачи по ID: выбрасывает исключение, если задача не найдена")
     void findById_shouldThrowNotFound_whenIdNotExists() {
         // Arrange
         Long id = 1L;
@@ -105,10 +108,11 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Получение всех задач: возвращает страницу задач")
     void findAll_shouldReturnPagedTasks() {
         // Arrange
         Integer page = 0;
-        Integer offset = 10; // offset = size
+        Integer offset = 10;
         PageRequest pageRequest = PageRequest.of(page, offset);
         List<Task> tasks = List.of(new Task(1L, "Title1", "Desc1", CompletionStatus.NOT_COMPLETED, LocalDateTime.now(), null));
         Page<Task> taskPage = new PageImpl<>(tasks, pageRequest, 1);
@@ -128,6 +132,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Получение задач по статусу завершения: возвращает страницу задач")
     void findAllByIsCompleted_shouldReturnPagedTasks() {
         // Arrange
         CompletionStatus status = CompletionStatus.COMPLETED;
@@ -152,6 +157,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Обновление задачи: выбрасывает исключение, если задача не найдена")
     void update_shouldThrowNotFound_whenIdNotExists() {
         // Arrange
         Long id = 1L;
@@ -167,6 +173,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Удаление задачи: успешно удаляет задачу, если ID существует")
     void delete_shouldDeleteTask_whenIdExists() {
         // Arrange
         Long id = 1L;
@@ -188,6 +195,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Удаление задачи: выбрасывает исключение, если задача не найдена")
     void delete_shouldThrowNotFound_whenIdNotExists() {
         // Arrange
         Long id = 1L;

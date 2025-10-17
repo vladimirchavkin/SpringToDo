@@ -1,5 +1,6 @@
 package com.emobile.springtodo.controller;
 
+import com.emobile.springtodo.controller.response.CustomResponse;
 import com.emobile.springtodo.entity.dto.TaskRequest;
 import com.emobile.springtodo.entity.dto.TaskResponse;
 import com.emobile.springtodo.entity.enumeration.CompletionStatus;
@@ -9,8 +10,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Task Controller", description = "Контроллер для работы с задачами.")
 public interface SwaggerTaskController {
@@ -42,7 +45,7 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<TaskResponse> create(TaskRequest taskRequest);
+    CustomResponse<TaskResponse> create(@Valid TaskRequest taskRequest);
 
     @Operation(
             summary = "Найти задачу по id",
@@ -78,7 +81,7 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<TaskResponse> findById(Long id);
+    CustomResponse<TaskResponse> findById(@Positive Long id);
 
     @Operation(
             summary = "Найти все задачи",
@@ -118,7 +121,7 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<Page<TaskResponse>> findAll(Integer page, Integer offset);
+    CustomResponse<Page<TaskResponse>> findAll(@PositiveOrZero Integer page, @Positive Integer offset);
 
     @Operation(
             summary = "Найти все задачи по isCompleted",
@@ -146,7 +149,11 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<Page<TaskResponse>> findAllByIsCompleted(CompletionStatus isCompleted, Integer page, Integer offset);
+    CustomResponse<Page<TaskResponse>> findAllByIsCompleted(
+            CompletionStatus isCompleted,
+            @PositiveOrZero Integer page,
+            @Positive Integer offset
+    );
 
     @Operation(
             summary = "Обновить задачу",
@@ -182,7 +189,7 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<TaskResponse> update(TaskRequest taskRequest, Long id);
+    CustomResponse<TaskResponse> update(@Valid TaskRequest taskRequest, @Positive Long id);
 
     @Operation(
             summary = "Удалить задачу",
@@ -218,6 +225,6 @@ public interface SwaggerTaskController {
                     )
             }
     )
-    ResponseEntity<TaskResponse> delete(Long id);
+    CustomResponse<TaskResponse> delete(@Positive Long id);
 
 }
