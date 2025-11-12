@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springtodo-k8s-deployment
+  labels:
+    app: todo-k8s
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-k8s
+  template:
+    metadata:
+      labels:
+        app: todo-k8s
+    spec:
+      containers:
+        - name: todo-k8s-container
+          image: todo-k8s:latest
+          ports:
+            - containerPort: 8088
+          resources:
+            requests:
+              memory: "2000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "3000Mi"
+              cpu: "2000m"
+---
+# В одном файле можно описать несколько ресурсов

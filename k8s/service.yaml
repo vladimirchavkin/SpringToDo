@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: springtodo-k8s-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80  # Порт сервиса
+      targetPort: 8088  # Порт пода
+  selector:
+    app: todo-k8s  # Селектор: находит поды по метке
