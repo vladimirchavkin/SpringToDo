@@ -1,0 +1,82 @@
+# Определяем стадии пайплайна
+stages:
+  - test
+  - build
+  - deploy
+
+# Переменные окружения
+variables:
+  DOCKER_REGISTRY: docker.io
+  DOCKER_IMAGE: vladimirchavkin/spring-todo
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+# Кэширование зависимостей Maven для ускорения сборки
+cache:
+  paths:
+    - .m2/repository/
+
+# Сервисы для тестов (PostgreSQL и Redis через Testcontainers)
+services:
+  - name: postgres:16
+    alias: postgres
+  - name: redis:latest
+    alias: redis
+
+# Job для запуска тестов на PR в dev ветку
+test_job:
+  stage: test
+  image: maven:3.8.6-openjdk-17
+  services:
+    - postgres:16
+    - redis:latest
+  variables:
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/todo_db"
+    SPRING_DATASOURCE_USERNAME: "postgres"
+    SPRING_DATASOURCE_PASSWORD: ""
+    SPRING_REDIS_HOST: "redis"
+    SPRING_REDIS_PORT: "6379"
+  script:
+    - mvn clean test
+  only:
+    refs:
+      - dev
+  except:
+    - master
+
+# Job для проверки сборки приложения на PR в dev
+build_check_job:
+  stage: build
+  image: maven:3.8.6-openjdk-17
+  script:
+    - mvn clean package -DskipTests
+  only:
+    refs:
+      - dev
+  except:
+    - master
+
+# Job для сборки и пуша Docker образа при merge в master
+docker_build_push:
+  stage: deploy
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD $DOCKER_REGISTRY
+  script:
+    - mvn clean package -DskipTests
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
+    - docker tag $DOCKER_IMAGE:$CI_COMMIT_SHA $DOCKER_IMAGE:latest
+    - docker push $DOCKER_IMAGE:latest
+  only:
+    refs:
+      - master
+
+    changes:
+      - Dockerfile
+      - src/**/*
+      - pom.xml
